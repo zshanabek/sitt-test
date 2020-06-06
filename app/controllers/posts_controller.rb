@@ -3,25 +3,11 @@ class PostsController < ApplicationController
 
   # GET /posts
   def index
-    limit = Integer(params[:count]) + 1
-    if params[:cursor]
-      cursor = Integer(params[:cursor])
-      @posts = Post.where("id >= ?", cursor).limit(limit)
-      if cursor + limit >= Post.count
-        next_cursor = ""
-      else
-        next_cursor = @posts.last.id + 1
-      end
-      render json: {"posts": @posts,"next_cursor": next_cursor}, status: :ok
-    else
-      if limit >= Post.count
-        next_cursor = ""
-      else
-        next_cursor = @posts.last.id + 1
-      end
-      @posts = Post.limit(limit)
-      render json: {"posts": @posts,"next_cursor": @posts.last.id+1}, status: :ok
-    end
+    limit = params[:count] ? Integer(params[:count]) : 3
+    cursor = params[:cursor] ? Integer(params[:cursor]) : 1
+    @posts = Post.where("id >= ?", cursor).limit(limit).order(:created_at)
+    next_cursor = cursor + limit >= Post.count ? "" : @posts.last.id + 1
+    render json: {"posts": @posts,"next_cursor": next_cursor}, status: :ok
   end
 
   # GET /posts/1
