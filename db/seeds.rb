@@ -10,8 +10,5 @@ Post.destroy_all
 ActiveRecord::Base.connection.reset_pk_sequence!('posts')
 
 30.times do
-    Post.create(
-        title: Faker::Book.title, content: Faker::Movies::HarryPotter.book, 
-        name: Faker::Job.key_skill
-    )
+    Post.create(title: Faker::Book.title, content: Faker::Movies::HarryPotter.book)
 end
