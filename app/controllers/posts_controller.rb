@@ -3,9 +3,25 @@ class PostsController < ApplicationController
 
   # GET /posts
   def index
-    @posts = Post.all
-
-    render json: @posts
+    limit = Integer(params[:count]) + 1
+    if params[:cursor]
+      cursor = Integer(params[:cursor])
+      @posts = Post.where("id >= ?", cursor).limit(limit)
+      if cursor + limit >= Post.count
+        next_cursor = ""
+      else
+        next_cursor = @posts.last.id + 1
+      end
+      render json: {"posts": @posts,"next_cursor": next_cursor}, status: :ok
+    else
+      if limit >= Post.count
+        next_cursor = ""
+      else
+        next_cursor = @posts.last.id + 1
+      end
+      @posts = Post.limit(limit)
+      render json: {"posts": @posts,"next_cursor": @posts.last.id+1}, status: :ok
+    end
   end
 
   # GET /posts/1
