@@ -1,17 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'posts API', type: :request do
-# initialize test data 
   let!(:posts) { create_list(:post, 10) }
   let(:post_id) { posts.first.id }
 
-  # Test suite for GET /posts
   describe 'GET /posts' do
-    # make HTTP get request before each example
     before { get '/posts' }
 
     it 'returns posts' do
-      # Note `json` is a custom helper to parse JSON responses
       expect(json).not_to be_empty
       expect(json['posts'].size).to eq(3)
     end
@@ -19,9 +15,20 @@ RSpec.describe 'posts API', type: :request do
     it 'returns status code 200' do
       expect(response).to have_http_status(200)
     end
+
+    it 'returns 3 posts' do
+      get '/posts',  params: { cursor: 6} 
+      expect(json).not_to be_empty
+      expect(json['posts'].size).to eq(3)
+      expect(json['posts'][2]['id'] - json['posts'][0]['id']).to eq(2)
+    end
+
+    it 'returns 5 posts' do
+      get '/posts',  params: { count: 5} 
+      expect(json['posts'].size).to eq(5)
+    end
   end
 
-  # Test suite for GET /posts/:id
   describe 'GET /posts/:id' do
     before { get "/posts/#{post_id}" }
 
@@ -49,7 +56,6 @@ RSpec.describe 'posts API', type: :request do
     end
   end
 
-  # Test suite for POST /posts
   describe 'POST /posts' do
     # valid payload
     let(:valid_attributes) { { title: 'Learn Elm', content: 'lorem' } }
@@ -76,7 +82,6 @@ RSpec.describe 'posts API', type: :request do
     end
   end
 
-  # Test suite for PUT /posts/:id
   describe 'PUT /posts/:id' do
     let(:valid_attributes) { { title: 'Shopping' } }
 
@@ -93,7 +98,6 @@ RSpec.describe 'posts API', type: :request do
     end
   end
 
-  # Test suite for DELETE /posts/:id
   describe 'DELETE /posts/:id' do
     before { delete "/posts/#{post_id}" }
 
