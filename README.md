@@ -1,24 +1,34 @@
-# README
+# Test task for sitt
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
+* Ruby version: 2.7.1
 
 * System dependencies
-
-* Configuration
+  
+```bash
+bundle install
+```
 
 * Database creation
 
+```bash
+rails db:create
+rails db:migrate
+```
+
 * Database initialization
+
+```bash
+rails db:seed
+```
 
 * How to run the test suite
 
-* Services (job queues, cache servers, search engines, etc.)
+```bash
+bundle exec rspec
+```
 
-* Deployment instructions
+* Make first request
 
-* ...
+```bash
+curl localhost:3000/posts\?count=5\&cursor=7
+```
