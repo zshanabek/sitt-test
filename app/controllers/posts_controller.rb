@@ -4,15 +4,16 @@ class PostsController < ApplicationController
 
   # GET /posts
   def index
-    limit = params[:page][:size] ? Integer(params[:page][:size]) : DEFAULT_PAGE_SIZE
-    direction = params[:page][:after] ? :after : :before
-    cursor = params[:page][direction] ? Integer(params[:page][direction]) : 1
-    @posts = direction == :after ? Post.where("id >= ?", cursor) : Post.where("id < ?", cursor)
-    @posts = @posts.limit(limit).order(:created_at)
+    # limit
+    limit = params[:page].try(:[], :size) ? Integer(params[:page][:size]) : DEFAULT_PAGE_SIZE
+    direction = params[:page].try(:[], :before) ? :before : :after
+    cursor = params[:page].try(:[], direction) ? Integer(params[:page][direction]) : 1
+    @posts = direction == :after ? Post.where("id >= ?", cursor) : Post.where("? > id", cursor)
+    @posts =  direction == :after ? @posts.limit(limit).order(:created_at) : @posts.order(:created_at).last(limit)
     @last_end = Post.where(:id => cursor..Post.last.id)
     @last_beginning = Post.where(:id => Post.first.id..cursor)
     next_cursor = limit < @last_end.count ? @posts.last.id + 1 : ""
-    prev_cursor = limit < @last_beginning.count ? @last_beginning.last.id - 1 : ""
+    prev_cursor = limit < @last_beginning.count ? @posts.first.id - 1 : ""
     render json: {"posts": @posts,"next_cursor": next_cursor,"prev_cursor": prev_cursor}, status: :ok
   end
 

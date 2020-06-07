@@ -7,6 +7,12 @@ RSpec.describe 'posts API', type: :request do
   describe 'GET /posts' do
     before { get '/posts' }
 
+    it 'returns 3 posts after the post with id 5' do
+      get '/posts',  params: { page: {after: 5}} 
+      expect(json['posts'][0]['id']).to eq(5)
+      expect(json['posts'].size).to eq(3)
+    end
+
     it 'returns posts' do
       expect(json).not_to be_empty
       expect(json['posts'].size).to eq(3)
@@ -16,16 +22,10 @@ RSpec.describe 'posts API', type: :request do
       expect(response).to have_http_status(200)
     end
 
-    it 'returns 3 posts' do
-      get '/posts',  params: { cursor: 6} 
+    it 'returns 7 posts' do
+      get '/posts',  params: { page: {size: 7}} 
       expect(json).not_to be_empty
-      expect(json['posts'].size).to eq(3)
-      expect(json['posts'][2]['id'] - json['posts'][0]['id']).to eq(2)
-    end
-
-    it 'returns 5 posts' do
-      get '/posts',  params: { count: 5} 
-      expect(json['posts'].size).to eq(5)
+      expect(json['posts'].size).to eq(7)
     end
   end
 
