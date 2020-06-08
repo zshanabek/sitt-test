@@ -30,5 +30,5 @@ bundle exec rspec
 * Make first request
 
 ```bash
-curl localhost:3000/posts\?page[size]=5\&page[before]=12
+curl localhost:3000/posts\?page\[size\]=5\&page\[before\]=12
 ```
